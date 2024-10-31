@@ -44,13 +44,12 @@ const sendEmail = async (recipientEmail, teamName) => {
     await transporter.sendMail({
       from: username,
       to: recipientEmail,
-      subject: 'NL WoW Mythic Trials - Laget ditt er godkjent',
+      subject: 'Laget ditt er registrert i Mythic Trials',
       html: `
         <p>Hei,</p>
-        <p>Ditt lag "<strong>${teamName}</strong>" har blitt godkjent.</p>
-        <p>Vennlig hilsen,</p>
-        <p>NL WoW - Mythic Trials</p>
-        <p>Gå til <a href="https://trials.nl-wow.no/min-side" target="_blank">https://trials.nl-wow.no/min-side</a> for å få tilgang til Discord for turneringen.</p>
+        <p>Ditt lag "<strong>${teamName}</strong>" er blitt registrert. Du kan oppdatere infoformasjonen om laget ditt og medlemmene her: <a href="https://trials.nl-wow.no/min-side" target="_blank">https://trials.nl-wow.no/min-side</a> </p>
+        <p>Hilsen,</p>
+        <p>Mythic Trials teamet i Nerdelandslaget WoW</p>
       `,
     });
     console.log(`Email sent to ${recipientEmail} for team ${teamName}`);
