@@ -40,20 +40,26 @@ const transporter = nodemailer.createTransport({
 });
 
 // Function to send email notification
+// Function to send email notification
 const sendEmail = async (recipientEmail, teamName) => {
   try {
     await transporter.sendMail({
       from: username,
       to: recipientEmail,
       subject: 'NL WoW Mythic Trials - Laget ditt er godkjent',
-      text: `Hei, \n\nGratulerer! Ditt lag "${teamName}" har blitt godkjent.\n\nVennlig hilsen, \nNL WoW - Mythic Trials`,
+      html: `
+        <p>Hei,</p>
+        <p>Gratulerer! Ditt lag "<strong>${teamName}</strong>" har blitt godkjent.</p>
+        <p>Vennlig hilsen,</p>
+        <p>NL WoW - Mythic Trials</p>
+        <p>Gå til <a href="https://trials.nl-wow.no/my-page" target="_blank">https://trials.nl-wow.no/min-side</a> for å få tilgang til Discord for turneringen.</p>
+      `,
     });
     console.log(`Email sent to ${recipientEmail} for team ${teamName}`);
   } catch (error) {
     console.error('Error sending email:', error);
   }
 };
-
 // Start listening to Supabase changes
 const startListening = async () => {
   await supabase
