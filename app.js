@@ -5,10 +5,16 @@ const { createClient } = require('@supabase/supabase-js');
 
 // Environment variables
 require('dotenv').config();
-const SUPABASE_URL = process.env.SUPABASE_URL || '';
-const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || '';
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY ;
 const username = process.env.EMAIL_USERNAME;
 const password = process.env.EMAIL_PASSWORD;
+
+if(!SUPABASE_URL || !SUPABASE_ANON_KEY || !username || !password) {
+  console.error('Missing environment variables');
+  process.exit(1);
+}
+
 
 // Initialize Supabase client
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -16,6 +22,8 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 // Create Express app
 const app = express();
 const PORT = 8080;
+
+app.use(express.json());
 
 // Create Nodemailer transporter
 const transporter = nodemailer.createTransport({
