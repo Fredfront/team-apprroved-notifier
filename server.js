@@ -5,9 +5,8 @@ const { createClient } = require('@supabase/supabase-js');
 
 // Environment variables
 require('dotenv').config();
-const PORT = process.env.PORT || 3001;
-const SUPABASE_URL = process.env.SUPABASE_URL || ''
-const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || ''
+const SUPABASE_URL = process.env.SUPABASE_URL || '';
+const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || '';
 const username = process.env.EMAIL_USERNAME;
 const password = process.env.EMAIL_PASSWORD;
 
@@ -38,7 +37,7 @@ const sendEmail = async (recipientEmail, teamName) => {
       from: username,
       to: recipientEmail,
       subject: 'NL WoW Mythic Trials - Laget ditt er godkjent',
-      text: `Hei, \n\nGratulerer! Ditt lag"${teamName}" har blitt godkjent.\n\nVennlig hilsen, \nNL WoW - Mythic Trials`,
+      text: `Hei, \n\nGratulerer! Ditt lag "${teamName}" har blitt godkjent.\n\nVennlig hilsen, \nNL WoW - Mythic Trials`,
     });
     console.log(`Email sent to ${recipientEmail} for team ${teamName}`);
   } catch (error) {
@@ -46,19 +45,24 @@ const sendEmail = async (recipientEmail, teamName) => {
   }
 };
 
-// Listen for changes on the teams table
-supabase
-  .channel('pick_ban')
-  .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'teams' }, (payload) => {
-    const {  new: newRow } = payload;
-    if (newRow.approved_in_sanity === true) {
-      console.log(newRow)
-      sendEmail(newRow.contact_person, newRow.name);
-    }
-  })
-  .subscribe()
+// Start listening to Supabase changes
+const startListening = () => {
+  supabase
+    .channel('pick_ban')
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'teams' }, (payload) => {
+      const { new: newRow } = payload;
+      if (newRow.approved_in_sanity === true) {
+        console.log(newRow);
+        sendEmail(newRow.contact_person, newRow.name);
+      }
+    })
+    .subscribe();
+  console.log('Listening for team approval changes...');
+};
 
-// Start Express server
-app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
+app.get('/api/start-listening', (req, res) => {
+  startListening();
+  res.status(200).send('Started listening for changes.');
 });
+
+module.exports = app;
