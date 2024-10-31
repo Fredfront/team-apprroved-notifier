@@ -1,47 +1,35 @@
 // Import required modules
-const express = require('express');
 const nodemailer = require('nodemailer');
 const { createClient } = require('@supabase/supabase-js');
+require('dotenv').config();
 
 // Environment variables
-require('dotenv').config();
 const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY ;
-const username = process.env.EMAIL_USERNAME;
-const password = process.env.EMAIL_PASSWORD;
+const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
+const EMAIL_USERNAME = process.env.EMAIL_USERNAME;
+const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
 
-if(!SUPABASE_URL || !SUPABASE_ANON_KEY || !username || !password) {
+if (!SUPABASE_URL || !SUPABASE_ANON_KEY || !EMAIL_USERNAME || !EMAIL_PASSWORD) {
   console.error('Missing environment variables');
   process.exit(1);
 }
+
 // Initialize Supabase client
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-// Create Express app
-const app = express();
-const PORT = 8080;
-
-app.use(express.json());
 
 // Create Nodemailer transporter
 const transporter = nodemailer.createTransport({
   host: 'send.one.com',
   port: 465,
-  tls: {
-    ciphers: 'SSLv3',
-    rejectUnauthorized: false,
-  },
-  auth: {
-    user: username,
-    pass: password,
-  },
+  tls: { ciphers: 'SSLv3', rejectUnauthorized: false },
+  auth: { user: EMAIL_USERNAME, pass: EMAIL_PASSWORD },
 });
 
 // Function to send email notification
 const sendEmail = async (recipientEmail, teamName) => {
   try {
     await transporter.sendMail({
-      from: username,
+      from: EMAIL_USERNAME,
       to: recipientEmail,
       subject: 'Laget ditt er registrert i Mythic Trials',
       html: `
@@ -56,29 +44,17 @@ const sendEmail = async (recipientEmail, teamName) => {
     console.error('Error sending email:', error);
   }
 };
-let isListeningInitialized = false;
 
 // Start listening to Supabase changes
-const startListening = async () => {
-  if (isListeningInitialized) return; // Prevent multiple listeners
-  isListeningInitialized = true;
-
+(async () => {
   await supabase
     .channel('pick_ban')
     .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'teams' }, (payload) => {
       const { new: newRow } = payload;
-      if (newRow.approved_in_sanity === true) {
+      if (newRow.approved_in_sanity) {
         sendEmail(newRow.contact_person, newRow.name);
       }
     })
     .subscribe();
   console.log('Listening for team approval changes...');
-};
-
-// Automatically start listening when the server starts
-startListening();
-
-// Start the server
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+})();
