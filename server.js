@@ -15,6 +15,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Create Express app
 const app = express();
+const PORT = 8080;
 
 // Create Nodemailer transporter
 const transporter = nodemailer.createTransport({
@@ -60,9 +61,12 @@ const startListening = () => {
   console.log('Listening for team approval changes...');
 };
 
-app.get('/api/start-listening', (req, res) => {
-  startListening();
-  res.status(200).send('Started listening for changes.');
+// Automatically start listening when the server starts
+startListening();
+
+// Start the server
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
 
 module.exports = app;
