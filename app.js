@@ -38,7 +38,6 @@ const transporter = nodemailer.createTransport({
 });
 
 // Function to send email notification
-// Function to send email notification
 const sendEmail = async (recipientEmail, teamName) => {
   try {
     await transporter.sendMail({
@@ -57,14 +56,18 @@ const sendEmail = async (recipientEmail, teamName) => {
     console.error('Error sending email:', error);
   }
 };
+let isListeningInitialized = false;
+
 // Start listening to Supabase changes
 const startListening = async () => {
+  if (isListeningInitialized) return; // Prevent multiple listeners
+  isListeningInitialized = true;
+
   await supabase
     .channel('pick_ban')
     .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'teams' }, (payload) => {
       const { new: newRow } = payload;
       if (newRow.approved_in_sanity === true) {
-        console.log(newRow);
         sendEmail(newRow.contact_person, newRow.name);
       }
     })
