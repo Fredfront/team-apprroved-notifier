@@ -14,8 +14,6 @@ if(!SUPABASE_URL || !SUPABASE_ANON_KEY || !username || !password) {
   console.error('Missing environment variables');
   process.exit(1);
 }
-
-
 // Initialize Supabase client
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -49,7 +47,7 @@ const sendEmail = async (recipientEmail, teamName) => {
       subject: 'NL WoW Mythic Trials - Laget ditt er godkjent',
       html: `
         <p>Hei,</p>
-        <p>Gratulerer! Ditt lag "<strong>${teamName}</strong>" har blitt godkjent.</p>
+        <p>Ditt lag "<strong>${teamName}</strong>" har blitt godkjent.</p>
         <p>Vennlig hilsen,</p>
         <p>NL WoW - Mythic Trials</p>
         <p>Gå til <a href="https://trials.nl-wow.no/min-side" target="_blank">https://trials.nl-wow.no/min-side</a> for å få tilgang til Discord for turneringen.</p>
