@@ -1,4 +1,5 @@
 // Import required modules
+const express = require('express');
 const nodemailer = require('nodemailer');
 const { createClient } = require('@supabase/supabase-js');
 require('dotenv').config();
@@ -58,3 +59,12 @@ const sendEmail = async (recipientEmail, teamName) => {
     .subscribe();
   console.log('Listening for team approval changes...');
 })();
+
+// Create Express app to keep Render happy
+const app = express();
+const PORT = process.env.PORT || 8080;
+
+// Start the Express server
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
