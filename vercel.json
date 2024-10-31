@@ -3,7 +3,5 @@
   "builds": [
     { "src": "server.js", "use": "@vercel/node" }
   ],
-  "routes": [
-    { "src": "/api/start-listening", "dest": "/server.js" }
-  ]
+  "routes": []
 }
