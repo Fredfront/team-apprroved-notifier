@@ -26,6 +26,10 @@ const transporter = nodemailer.createTransport({
   auth: { user: EMAIL_USERNAME, pass: EMAIL_PASSWORD },
 });
 
+// Cache to prevent duplicate emails within a short time frame
+const emailCache = new Set();
+const CACHE_EXPIRY_MS = 60000; // 1 minute
+
 // Function to send email notification
 const sendEmail = async (recipientEmail, teamName) => {
   try {
@@ -46,21 +50,41 @@ const sendEmail = async (recipientEmail, teamName) => {
   }
 };
 
+// Function to handle Supabase changes
+const handleSupabaseChange = async (payload) => {
+  const { new: newRow } = payload;
+  
+  // Check for `approved_in_sanity` change and avoid duplicate emails
+  if (newRow.approved_in_sanity) {
+    const cacheKey = `${newRow.contact_person}-${newRow.name}`;
+
+    // Skip if email was sent recently
+    if (emailCache.has(cacheKey)) {
+      console.log(`Duplicate email prevented for ${newRow.name} (${newRow.contact_person})`);
+      return;
+    }
+
+    // Send email and add to cache
+    await sendEmail(newRow.contact_person, newRow.name);
+    emailCache.add(cacheKey);
+
+    // Remove cache entry after expiry time to allow future notifications if necessary
+    setTimeout(() => {
+      emailCache.delete(cacheKey);
+    }, CACHE_EXPIRY_MS);
+  }
+};
+
 // Start listening to Supabase changes
 (async () => {
   await supabase
     .channel('pick_ban')
-    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'teams' }, (payload) => {
-      const { new: newRow } = payload;
-      if (newRow.approved_in_sanity) {
-        sendEmail(newRow.contact_person, newRow.name);
-      }
-    })
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'teams' }, handleSupabaseChange)
     .subscribe();
   console.log('Listening for team approval changes...');
 })();
 
-// Create Express app to keep Render happy
+// Create Express app to keep the server active
 const app = express();
 const PORT = process.env.PORT || 8080;
 
