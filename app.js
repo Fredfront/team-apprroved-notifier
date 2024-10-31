@@ -52,7 +52,7 @@ const sendEmail = async (recipientEmail, teamName) => {
         <p>Gratulerer! Ditt lag "<strong>${teamName}</strong>" har blitt godkjent.</p>
         <p>Vennlig hilsen,</p>
         <p>NL WoW - Mythic Trials</p>
-        <p>Gå til <a href="https://trials.nl-wow.no/my-page" target="_blank">https://trials.nl-wow.no/min-side</a> for å få tilgang til Discord for turneringen.</p>
+        <p>Gå til <a href="https://trials.nl-wow.no/min-side" target="_blank">https://trials.nl-wow.no/min-side</a> for å få tilgang til Discord for turneringen.</p>
       `,
     });
     console.log(`Email sent to ${recipientEmail} for team ${teamName}`);
