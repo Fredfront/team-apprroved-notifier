@@ -47,8 +47,8 @@ const sendEmail = async (recipientEmail, teamName) => {
 };
 
 // Start listening to Supabase changes
-const startListening = () => {
-  supabase
+const startListening = async () => {
+  await supabase
     .channel('pick_ban')
     .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'teams' }, (payload) => {
       const { new: newRow } = payload;
