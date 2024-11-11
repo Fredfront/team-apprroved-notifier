@@ -31,17 +31,18 @@ const emailCache = new Set();
 const CACHE_EXPIRY_MS = 60000; // 1 minute
 
 // Function to send email notification
-const sendEmail = async (recipientEmail, teamName) => {
+const sendEmail = async (recipientEmail, teamName, recipientName) => {
   try {
     await transporter.sendMail({
       from: EMAIL_USERNAME,
       to: recipientEmail,
       subject: 'Laget ditt er registrert i Mythic Trials',
       html: `
-        <p>Hei,</p>
-        <p>Ditt lag "<strong>${teamName}</strong>" er blitt registrert. Du kan oppdatere informasjon om laget ditt og få discord invitasjon for laget her: <a href="https://trials.nl-wow.no/min-side" target="_blank">https://trials.nl-wow.no/min-side</a> </p>
-        <p>Vi ønsker deg lykke til i turneringen!</p>
-        <p>Hilsen,</p>
+        <p>Hei ${recipientName || ''},</p>
+        <p>Vi har gleden av å informere deg om at laget ditt, "<strong>${teamName}</strong>," er blitt registrert. Du kan oppdatere informasjon om laget ditt og få discord-invitasjon for laget her: <a href="https://trials.nl-wow.no/min-side" target="_blank">trials.nl-wow.no/min-side</a>.</p>
+        <p><strong>NB:</strong> Alle spillere må være medlem av <strong>Nerdelandslaget WoW på Discord</strong> som arrangør av turneringen. Vi har en egen Discord-server for alle registrerte lag og deltakere, der det meste av kommunikasjonen mellom spillere og admins vil foregå.</p>
+        <p>Vi ønsker deg og laget ditt lykke til i turneringen!</p>
+        <p>Med vennlig hilsen,</p>
         <p>Mythic Trials teamet i Nerdelandslaget WoW</p>
       `,
     });
