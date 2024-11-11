@@ -39,7 +39,8 @@ const sendEmail = async (recipientEmail, teamName) => {
       subject: 'Laget ditt er registrert i Mythic Trials',
       html: `
         <p>Hei,</p>
-        <p>Ditt lag "<strong>${teamName}</strong>" er blitt registrert. Du kan oppdatere informasjon om laget ditt og medlemmene her: <a href="https://trials.nl-wow.no/min-side" target="_blank">https://trials.nl-wow.no/min-side</a> </p>
+        <p>Ditt lag "<strong>${teamName}</strong>" er blitt registrert. Du kan oppdatere informasjon om laget ditt og få discord invitasjon for laget her: <a href="https://trials.nl-wow.no/min-side" target="_blank">https://trials.nl-wow.no/min-side</a> </p>
+        <p>Vi ønsker deg lykke til i turneringen!</p>
         <p>Hilsen,</p>
         <p>Mythic Trials teamet i Nerdelandslaget WoW</p>
       `,
